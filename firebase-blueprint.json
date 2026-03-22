@@ -1,0 +1,86 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "User Profile",
+      "description": "Stores user profile information and connected wallet address.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "Firebase Auth UID" },
+        "name": { "type": "string", "description": "User's display name" },
+        "email": { "type": "string", "format": "email", "description": "User's email address" },
+        "walletAddress": { "type": "string", "description": "Connected Web3 wallet address" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Profile creation timestamp" }
+      },
+      "required": ["uid", "name", "email", "createdAt"]
+    },
+    "PaymentRule": {
+      "title": "Payment Rule",
+      "description": "Defines a recurring or trigger-based payment rule.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "type": { "type": "string", "enum": ["recurring", "trigger"] },
+        "amount": { "type": "number" },
+        "token": { "type": "string" },
+        "interval": { "type": "string", "enum": ["hourly", "daily", "weekly", "monthly"] },
+        "condition": { "type": "string" },
+        "action": { "type": "string", "enum": ["send_payment"] },
+        "recipient": { "type": "string" },
+        "description": { "type": "string" },
+        "status": { "type": "string", "enum": ["active", "paused", "completed"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "userId", "type", "amount", "token", "action", "recipient", "status", "createdAt"]
+    },
+    "Transaction": {
+      "title": "Transaction",
+      "description": "Records a payment execution attempt.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "ruleId": { "type": "string" },
+        "amount": { "type": "number" },
+        "token": { "type": "string" },
+        "recipient": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "completed", "failed", "rejected"] },
+        "txHash": { "type": "string" },
+        "reason": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "userId", "amount", "token", "recipient", "status", "timestamp"]
+    },
+    "AutomationLog": {
+      "title": "Automation Log",
+      "description": "Logs agent activity and decisions.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "message": { "type": "string" },
+        "type": { "type": "string", "enum": ["info", "warning", "error", "decision"] },
+        "ruleId": { "type": "string" }
+      },
+      "required": ["id", "timestamp", "message", "type"]
+    }
+  },
+  "firestore": {
+    "/users/{uid}": {
+      "schema": "UserProfile",
+      "description": "User profile documents"
+    },
+    "/rules/{ruleId}": {
+      "schema": "PaymentRule",
+      "description": "Payment rules"
+    },
+    "/transactions/{txId}": {
+      "schema": "Transaction",
+      "description": "Transaction history"
+    },
+    "/logs/{logId}": {
+      "schema": "AutomationLog",
+      "description": "Automation logs"
+    }
+  }
+}

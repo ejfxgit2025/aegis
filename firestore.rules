@@ -1,0 +1,62 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    function isDocOwner() {
+      return isAuthenticated() && request.auth.uid == resource.data.userId;
+    }
+    
+    function isValidUserProfile(data) {
+      return data.keys().hasAll(['uid', 'name', 'email', 'createdAt']) &&
+             data.uid == request.auth.uid &&
+             data.name is string && data.name.size() > 0 &&
+             data.email is string && data.email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+    }
+    
+    function isValidRule(data) {
+      return data.keys().hasAll(['id', 'userId', 'type', 'amount', 'token', 'action', 'recipient', 'status', 'createdAt']) &&
+             data.userId == request.auth.uid &&
+             data.type in ['recurring', 'trigger'] &&
+             data.amount is number && data.amount > 0 &&
+             data.token is string &&
+             data.recipient is string && data.recipient.matches("^0x[a-fA-F0-9]{40}$") &&
+             data.status in ['active', 'paused', 'completed'];
+    }
+
+    // User profiles
+    match /users/{uid} {
+      allow read: if isAuthenticated();
+      allow create, update: if isOwner(uid) && isValidUserProfile(request.resource.data);
+    }
+    
+    // Payment rules
+    match /rules/{ruleId} {
+      allow read: if isAuthenticated() && (resource == null || resource.data.userId == request.auth.uid);
+      allow create: if isAuthenticated() && isValidRule(request.resource.data);
+      allow update: if isDocOwner() && isValidRule(request.resource.data);
+      allow delete: if isDocOwner();
+    }
+    
+    // Transactions
+    match /transactions/{txId} {
+      allow read: if isAuthenticated() && (resource == null || resource.data.userId == request.auth.uid);
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow update: if false; // Transactions are immutable
+    }
+    
+    // Logs
+    match /logs/{logId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated(); // Agent can create logs
+      allow update, delete: if false;
+    }
+  }
+}

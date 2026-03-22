@@ -1,0 +1,50 @@
+[
+  {
+    "id": "1710984000000",
+    "timestamp": "2024-03-20T12:00:00.000Z",
+    "decision": {
+      "decision": "approve",
+      "confidence": 95,
+      "approved_amount": 45.00,
+      "reason": "Standard business meal.",
+      "risk_flag": "low",
+      "category": "Meals",
+      "merchant": "Sweetgreen",
+      "total_amount": 45.00
+    },
+    "status": "paid",
+    "txHash": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+  },
+  {
+    "id": "1710897600000",
+    "timestamp": "2024-03-19T12:00:00.000Z",
+    "decision": {
+      "decision": "approve",
+      "confidence": 98,
+      "approved_amount": 25.50,
+      "reason": "Standard transportation expense.",
+      "risk_flag": "low",
+      "category": "Transportation",
+      "merchant": "Uber",
+      "total_amount": 25.50
+    },
+    "status": "paid",
+    "txHash": "0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890"
+  },
+  {
+    "id": "1710811200000",
+    "timestamp": "2024-03-18T12:00:00.000Z",
+    "decision": {
+      "decision": "partial",
+      "confidence": 85,
+      "approved_amount": 150.00,
+      "reason": "Hotel stay approved, but mini-bar charges ($50) are not reimbursable.",
+      "risk_flag": "medium",
+      "category": "Lodging",
+      "merchant": "Marriott",
+      "total_amount": 200.00
+    },
+    "status": "paid",
+    "txHash": "0x7890abcdef1234567890abcdef1234567890abcdef1234567890abcdef123456"
+  }
+]
